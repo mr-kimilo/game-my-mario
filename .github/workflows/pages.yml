@@ -1,4 +1,4 @@
-name: gallery
+name: pages
 on:
   push:
     branches: [main]
@@ -21,9 +21,10 @@ jobs:
       - run: npm ci
       - run: node tools/check.mjs
       - run: node tools/build-gallery.mjs
+      - run: node tools/build-site.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/gallery
+          path: dist/site
   deploy:
     needs: build
     runs-on: ubuntu-latest
