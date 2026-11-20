@@ -16,6 +16,11 @@
   h1 em { color: var(--accent); font-style: normal; }
   .sub { margin: 0; color: var(--dim); font-size: 16px; }
   .sub b { color: var(--fg); }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .cta { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; padding: 10px 22px; border-radius: 10px; }
+  .cta:hover { filter: brightness(1.12); }
+  .cta.ghost { background: transparent; border: 1px solid var(--line); color: var(--dim); font-weight: 500; }
+  .cta.ghost:hover { border-color: var(--accent); color: var(--fg); }
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 28px 0 8px; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
   .card h2 { margin: 0 0 6px; font-size: 16px; }
@@ -49,6 +54,11 @@
   <header>
     <h1>pixelfx<em>.</em> 仓库导览</h1>
     <p class="sub"><b id="count">…</b> 个像素艺术特效 · <b>20</b> 个分类 · 每一个都是一小段代码，下面全部实时播放中。</p>
+    <div class="cta-row">
+      <a class="cta" href="mario.html">🎮 开始游戏 · 马里奥中国巡礼</a>
+      <a class="cta ghost" href="gallery/">特效画廊</a>
+      <a class="cta ghost" href="play.md">玩法说明</a>
+    </div>
   </header>
 
   <div class="cards">

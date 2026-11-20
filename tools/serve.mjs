@@ -16,7 +16,7 @@ const TYPES = {
 
 createServer(async (req, res) => {
   let path = decodeURIComponent(new URL(req.url, "http://x").pathname);
-  if (path === "/") return res.writeHead(302, { location: "/gallery/" }).end();
+  if (path === "/") return res.writeHead(302, { location: "/index.html" }).end();
   if (path.endsWith("/")) path += "index.html";
   const file = normalize(join(ROOT, path));
   if (!file.startsWith(ROOT + sep)) return res.writeHead(403).end();
@@ -26,4 +26,4 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(404).end("not found");
   }
-}).listen(PORT, () => console.log(`gallery: http://localhost:${PORT}/gallery/`));
+}).listen(PORT, () => console.log(`site: http://localhost:${PORT}/  ·  game: http://localhost:${PORT}/mario.html`));

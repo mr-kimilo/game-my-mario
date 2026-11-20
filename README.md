@@ -11,17 +11,23 @@
 
 ## 快速开始
 
-需要 Node.js 18+（只用于起静态服务器，游戏本身零依赖）。
-
 ```bash
+git clone https://github.com/mr-kimilo/game-my-mario.git
+cd game-my-mario
 node tools/serve.mjs 8321
 ```
 
+然后打开 **http://localhost:8321/**（大厅，点「🎮 开始游戏」）或直接 **http://localhost:8321/mario.html**。
+
+- 只需要 Node.js 18+，**不需要 `npm install`**：游戏本身零依赖，静态服务器只用 Node 内置模块（`npm install` 只是给 `tools/check.mjs`、导出精灵图这类开发脚本装工具链）。
+- 不能直接双击 `mario.html` 打开：页面用的是 ES module，浏览器要求经 HTTP 加载。
+- 在线版：<https://mr-kimilo.github.io/game-my-mario/>（把仓库 Pages 的 Source 设为 “GitHub Actions” 后，push 到 `main` 会自动发布 `dist/site`）。
+
 | 地址 | 内容 |
 |---|---|
+| http://localhost:8321/ | 大厅：全库 232 个特效实时预览 + 游戏入口 |
 | http://localhost:8321/mario.html | 游戏本体（主菜） |
-| http://localhost:8321/index.html | 大厅：全库 232 个特效实时预览 |
-| http://localhost:8321/gallery/ | 官方画廊：调色板、背景、导出精灵图 |
+| http://localhost:8321/gallery/ | 官方画廊：点特效可调色板/背景、导出精灵图 |
 
 ## 玩法
 
@@ -43,7 +49,7 @@ index.html       大厅：把整库特效同时跑起来，用于挑特效
 src/core/        引擎核心：帧缓冲、painter、粒子、模拟、调色板
 src/fx/          232 个特效，按火/冰/光/暗/天气/UI 等分类，每个一个文件
 gallery/         画廊：实时调色板、背景切换、精灵图导出
-tools/           静态服务器、渲染、检查、导出、新特效脚手架
+tools/           静态服务器、渲染、检查、导出、新特效脚手架、静态站打包（build-site.mjs）
 docs/            特效目录与创作规范
 skills/          pixelfx 的 Claude Code 技能（用同样的标准写新特效）
 ```
