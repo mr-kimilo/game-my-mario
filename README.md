@@ -1,138 +1,74 @@
 <p align="center">
-  <img src="docs/readme/montage.gif" width="800" alt="A grid of pixel art effects playing at once: a campfire, a burning skull, a waterfall, a plasma ball, a portal, a tornado and more.">
+  <img src="docs/readme/montage.gif" width="800" alt="A grid of pixel art effects from the pixelfx engine playing at once.">
 </p>
 
-# pixelfx.
+# 马里奥 · 中国巡礼
 
-**<!-- count -->232<!-- /count --> pixel art effects and animations, every one a small piece of code.** Fire,
-explosions, magic, weather, UI, pickups, critters and more. Play them live, recolor and mirror them, drop them into
-a browser game, or export sprite sheets for any engine. Plus a Claude Code skill that makes new ones the way a
-picky pixel artist would: draft, render, look, refine.
+**一个用代码实时绘制的像素风横版闯关游戏。** 6 座城市、30 个景点关卡、双人同屏、手柄支持，
+画面中没有一个位图素材——地形、角色、金币、火球、烟花全部由 [pixelfx](docs/AUTHORING.md) 引擎逐帧画出来。
 
-**[open the gallery](https://patch-gg.github.io/pixelfx/)** · [catalog](docs/CATALOG.md) · [the skill](#the-skill) ·
-[make your own](#make-your-own) · [how it works](#how-it-works)
+[玩法说明](play.md) · [特效目录](docs/CATALOG.md) · [创作规范](docs/AUTHORING.md) · [画廊](gallery/)
 
-The method is [Hugo Duprez](https://x.com/HugoDuprez)'s, from [How to make (good) pixel art effects with
-Claude](https://www.spritefusion.com/blog/how-to-make-good-pixel-art-effects-with-claude): code is clay, trust your
-eyes, feed your references. His [open-source effects](https://www.spritefusion.com/pixel-art-vfx) at Sprite Fusion
-set the bar, and `src/core/sim.js` and the effects that say so at the top adapt his code. This repo is our take on
-the idea at library scale, with a skill to keep going.
+## 快速开始
 
-## what's in it.
-
-<!-- catalog -->
-| category | effects | some of them |
-|---|---|---|
-| **fire** | 12 | brazier, campfire, candle, fire breath, fire ring, fire tornado… |
-| **explosions** | 12 | barrel explosion, big explosion, cartoon pow, dirt explosion, firework burst, firework rocket… |
-| **water** | 12 | bubbles, drip, fountain, geyser, rain splash, ripples… |
-| **ice** | 10 | blizzard vortex, freeze, frost breath, frost nova, ice crystal, ice lance… |
-| **lightning** | 11 | ball lightning, chain lightning, charge up, electrified, lightning strike, plasma ball… |
-| **sci-fi** | 12 | emp blast, energy core, force field, glitch, hologram, jetpack… |
-| **melee** | 12 | claw swipe, dagger flurry, double slash, hammer smash, heavy cleave, scythe reap… |
-| **impacts** | 11 | blunt hit, bullet impact, critical hit, ground slam, heavy landing, hit flash… |
-| **projectiles** | 13 | arrow, bullet tracer, cannon shot, energy disc, signal flare, homing missile… |
-| **spawn & death** | 10 | coin drop, disintegrate, dissolve burn, egg hatch, poof, respawn beam… |
-| **arcane** | 12 | arcane beam, arcane missiles, arcane orb, blink in, blink out, magic circle cast… |
-| **holy** | 10 | blessing, divine shield, feather burst, halo, heal, healing ring… |
-| **shadow** | 12 | black hole, curse, dark explosion, eclipse, grasping hands, hex sigil… |
-| **status** | 13 | bleeding, burning, charmed, confused, cursed, frozen… |
-| **nature** | 13 | acid splash, boulder, earth spike, healing bloom, leaf storm, poison cloud… |
-| **weather** | 12 | aurora, blizzard, cherry blossoms, clouds, falling leaves, fireflies… |
-| **ui** | 12 | achievement, coin collect, combo counter, confetti, countdown, crit number… |
-| **pickups** | 11 | chest open, coin spin, collect burst, crystal shard, gem spin, heart pickup… |
-| **transitions** | 10 | blinds, burn away, crt off, diamond wipe, glitch wipe, iris… |
-| **critters** | 12 | bat, bird, butterfly, eyeball, fish school, flying skull… |
-<!-- /catalog -->
-
-Every effect is a file in `src/fx/<category>/<name>.js`. The [catalog](docs/CATALOG.md) lists them all.
-
-## use one.
-
-**In a browser game** (canvas, Phaser, PixiJS, Kaplay, three.js), use the code. No dependencies.
-
-```js
-import { createFrame, clearFrame, createFx, composite } from "pixelfx";
-import * as frostNova from "pixelfx/fx/ice/frost-nova";
-
-const frame = createFrame(320, 180);                   // your game's pixel resolution
-const img = new ImageData(320, 180);
-const fx = createFx(frostNova, { x: 160, y: 140 });   // also: flip, angle, seed, palette, light...
-
-function tick(dt) {
-  fx.update(dt);
-  clearFrame(frame);
-  fx.draw(frame, "back");                              // behind characters
-  drawCharacters();
-  fx.draw(frame, "front");
-  composite(frame, img.data, backgroundColor);         // color, then light added on top
-  ctx.putImageData(img, 0, 0);                         // scale up with image-rendering: pixelated
-}
-```
-
-Install from GitHub with `npm i github:patch-gg/pixelfx`, or copy `src/core` and the effects you want.
-
-**In any engine** (Godot, Unity, GameMaker, Defold, LÖVE, Bevy), use sprite sheets:
+需要 Node.js 18+（只用于起静态服务器，游戏本身零依赖）。
 
 ```bash
-node tools/render.mjs ice/frost-nova --sheet
+node tools/serve.mjs 8321
 ```
 
-That writes a transparent PNG of every frame in a grid and an Aseprite-style JSON (frame rects, durations, and
-`meta.pixelfx` with fps, loop, columns and the pivot). Phaser's atlas loader and the Aseprite importers for Godot
-and Unity read it. `node tools/sheets.mjs` exports the whole library to `sheets/`.
+| 地址 | 内容 |
+|---|---|
+| http://localhost:8321/mario.html | 游戏本体（主菜） |
+| http://localhost:8321/index.html | 大厅：全库 232 个特效实时预览 |
+| http://localhost:8321/gallery/ | 官方画廊：调色板、背景、导出精灵图 |
 
-Any effect takes a `palette` (a dark-to-bright ramp of hex colors), so a fire can burn blue and a heal can glow
-pink without touching its code:
+## 玩法
+
+- **模式**：1 人 / 2 人同屏（共享画面，协作闯关）/ 2 人轮流（比分定胜负）
+- **难度**：简单（坑窄怪少、400 秒）/ 正常（300 秒）/ 困难（怪多且快、250 秒）
+- **城市**：成都 · 重庆 · 西安 · 北京 · 上海 · 深圳，每城 5 个景点连打
+- **操作**：P1 `A/D` 移动、`W/空格` 跳、`J/F` 火球；P2 `←/→`、`↑`、`回车`；`M` 静音、`R` 重开、`Esc` 回菜单
+- **手柄**：左摇杆/十字键移动、`A/B` 跳、`X/Y` 火球、`Start` 重开
+- **其他**：金币攒满 100 加命、问号块出蘑菇/金币、变大后可顶碎砖块、踩怪或火球击杀、碰到旗杆过关、本地 Top 10 排行榜
+
+完整规则（含 2 人同屏细节、每城景点清单）见 [play.md](play.md)。
+
+## 项目结构
+
+```
+mario.html       游戏本体：菜单、物理、碰撞、渲染、音效（单文件）
+game-levels.js   关卡生成：城市/景点主题、难度曲线、地形与敌人布局
+index.html       大厅：把整库特效同时跑起来，用于挑特效
+src/core/        引擎核心：帧缓冲、painter、粒子、模拟、调色板
+src/fx/          232 个特效，按火/冰/光/暗/天气/UI 等分类，每个一个文件
+gallery/         画廊：实时调色板、背景切换、精灵图导出
+tools/           静态服务器、渲染、检查、导出、新特效脚手架
+docs/            特效目录与创作规范
+skills/          pixelfx 的 Claude Code 技能（用同样的标准写新特效）
+```
+
+## 画面上的一切都是代码
+
+游戏只依赖引擎的两个能力：**帧缓冲**（`color` 像素 + `light` 叠加光）和**特效**（`createFx(effect, opts)`）。
+金币旋转、踩怪烟尘、火球、烟花、祝福光环都直接复用 `src/fx` 里的实现，
+所有随机数都来自 `seed`，所以回放、重开和不同帧率下的表现一致。
+
+特效可以单独用在自己的项目里：`import * as frostNova from "pixelfx/fx/ice/frost-nova"`；
+给 Godot / Unity / GameMaker 用就导出精灵图：
 
 ```bash
-node tools/render.mjs fire/torch --gif --opts '{"palette": ["#102","#215","#43a","#8cf","#cff","#fff"]}'
+node tools/render.mjs ice/frost-nova --sheet   # 透明 PNG + Aseprite 风格 JSON
+node tools/sheets.mjs                          # 导出整库到 sheets/
 ```
 
-## the skill.
+## 许可证与致谢
 
-The `pixelfx` skill teaches Claude Code to find, use, export and make effects. Install it as a plugin:
+MIT，代码与特效均可商用，见 [LICENSE](LICENSE)。
 
-```
-/plugin marketplace add patch-gg/pixelfx
-/plugin install pixelfx@pixelfx
-```
+- 引擎 `pixelfx` 来自 [Patch](https://patch.gg)，本仓库在其基础上加了游戏、大厅与关卡。
+- `src/core/sim.js` 以及文件头注明来源的特效改编自 [Hugo Duprez](https://x.com/HugoDuprez) 的
+  [Sprite Fusion 开源像素 VFX](https://www.spritefusion.com/pixel-art-vfx)（MIT）。
+- `gallery/fonts` 中的 Patch Pixel 字体为 Patch 自有，不在 MIT 许可范围内。
 
-or copy `skills/pixelfx` into `~/.claude/skills/`. Then ask for what you want:
-
-- "Add a frost nova to my mage's ultimate."
-- "Make five takes on a coin pickup sparkle and show me the best two."
-- "Export the fire and explosions categories as sprite sheets for Godot."
-- "This hit effect feels floaty. Make it punchier."
-
-## make your own.
-
-```bash
-node tools/new.mjs arcane/my-spell       # a working starting point (add --loop for a loop)
-node tools/render.mjs arcane/my-spell    # records/arcane/my-spell/contact.png: look at it
-node tools/check.mjs arcane/my-spell     # spills, seams, unseeded randomness, slow frames
-```
-
-Then go round: look at the contact sheet, fix the worst thing, render again. `--gif` and `--mp4` show the motion,
-`--all` shows every frame. [docs/AUTHORING.md](docs/AUTHORING.md) has the contract, the drawing API and the quality
-bar. `node tools/serve.mjs` runs the gallery locally with your effects in it.
-
-## how it works.
-
-- **Two kinds of effect, no images.** Pure effects export `draw(p, t, o)`, the frame at `t` seconds from `t` alone, so
-  loops tile with no seam. Simulated effects export `create(o)` and step real particles, debris and lights at 120 Hz,
-  so sparks bounce and smoke rolls the same at any frame rate.
-- **Two buffers.** `color` takes pixels: opaque, dithered or truly translucent. `light` takes additive glow, added on
-  top. Hot things look hot because of the light buffer.
-- **Seeded everything.** Every random number comes from the effect's seed, so frame 40 is the same every time.
-- **Local space.** Effects draw around their own origin; the painter places, mirrors and rotates them. Directional
-  effects face right. A 24×38 stock character stands in for status effects, auras and hits.
-- **Same frame shape as Sprite Fusion's VFX** (`{ w, h, ox, oy, color, light }`), so both libraries can draw into
-  one frame.
-
-## license.
-
-MIT, code and effects. Use them in anything, commercial included. Parts are adapted from Hugo Duprez's MIT effects,
-and the Patch Pixel font in `gallery/fonts` is Patch's own and not covered: see [NOTICE.md](NOTICE.md).
-
-Made by [Patch](https://patch.gg).
+细节见 [NOTICE.md](NOTICE.md)。
